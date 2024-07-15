@@ -225,10 +225,23 @@ def get_shopping_cart_menu(context=None):
 
 	return frappe.render_template("templates/includes/cart/cart_dropdown.html", context)
 
+@frappe.whitelist()
+def get_locations():
+	locations=frappe.db.get_all('Prison Locations', pluck='name')
+	print(locations)
+	return locations
+
 
 @frappe.whitelist()
 def add_new_address(doc):
 	doc = frappe.parse_json(doc)
+	inmate_location=frappe.get_doc('Prison Locations',doc['Location'])
+	doc['address_title']=doc['inmate_id']
+	doc['address_line1']=inmate_location.address_line1
+	doc['city']=inmate_location.city
+	doc['country']=inmate_location.country
+	print(doc)
+	
 	doc.update({"doctype": "Address"})
 	address = frappe.get_doc(doc)
 	address.save(ignore_permissions=True)

@@ -67,45 +67,27 @@ frappe.ready(() => {
 		const $check = $(e.target);
 		toggle_billing_address_section(!$check.is(':checked'));
 	});
+	let inmate_locations;
 
+	frappe.call({
+		type: "POST",
+		method: "webshop.webshop.shopping_cart.cart.get_locations",                        
+		callback: function(r) {
+			inmate_locations = r.message; // Assign the response directly to the variable
+		}
+	}).then(function() {
+	}).catch(function(error) {
+		console.error("Error fetching locations:", error);
+	});
+	console.log(inmate_locations)
 	$('.btn-new-address').click(() => {
 		const d = new frappe.ui.Dialog({
 			title: __('New Address'),
 			fields: [
 				{
-					label: __('Address Title'),
-					fieldname: 'address_title',
+					label: __('Inmate ID'),
+					fieldname: 'inmate_id',
 					fieldtype: 'Data',
-					reqd: 1
-				},
-				{
-					label: __('Address Line 1'),
-					fieldname: 'address_line1',
-					fieldtype: 'Data',
-					reqd: 1
-				},
-				{
-					label: __('Address Line 2'),
-					fieldname: 'address_line2',
-					fieldtype: 'Data'
-				},
-				{
-					label: __('City/Town'),
-					fieldname: 'city',
-					fieldtype: 'Data',
-					reqd: 1
-				},
-				{
-					label: __('State'),
-					fieldname: 'state',
-					fieldtype: 'Data'
-				},
-				{
-					label: __('Country'),
-					fieldname: 'country',
-					fieldtype: 'Link',
-					options: 'Country',
-					only_select: true,
 					reqd: 1
 				},
 				{
@@ -114,24 +96,11 @@ frappe.ready(() => {
 					width: "50%"
 				},
 				{
-					label: __('Address Type'),
-					fieldname: 'address_type',
+					label: __('Location'),
+					fieldname: 'Location',
 					fieldtype: 'Select',
-					options: [
-						'Billing',
-						'Shipping'
-					],
-					reqd: 1
-				},
-				{
-					label: __('Postal Code'),
-					fieldname: 'pincode',
-					fieldtype: 'Data'
-				},
-				{
-					fieldname: "phone",
-					fieldtype: "Data",
-					label: "Phone",
+					options: inmate_locations,
+					only_select: true,
 					reqd: 1
 				},
 			],
